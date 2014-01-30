@@ -1,7 +1,22 @@
 {
   "meteor": {},
   "dependencies": {
-    "basePackages": {},
-    "packages": {}
+    "basePackages": {
+      "collection2": {},
+      "minimongoid": {},
+      "reactive-ace": {}
+    },
+    "packages": {
+      "collection2": {
+        "git": "https://github.com/aldeed/meteor-collection2.git",
+        "tag": "v0.3.1",
+        "commit": "1caff0101bf23a2de7d767c4e080a073e1158fef"
+      },
+      "simple-schema": {
+        "git": "https://github.com/aldeed/meteor-simple-schema.git",
+        "tag": "v0.2.28",
+        "commit": "29f3a54be67e9b988ad59994ffa152d9559e4695"
+      }
+    }
   }
 }
