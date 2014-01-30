@@ -1,37 +1,38 @@
 
 <body>
-  <div class="container">
-    <h1>VA</h1>
-    {{>timeline}}
-    {{>accountList}}
-    {{>accountMap}}
-    {{>transactions}}
-  </div>
+    <div class="container">
+        <header class="header"> 
+            <h1 class="span-8">VA</h1>
+            <div class="span-4">
+                {{>currencyChooser}}
+            </div>
+        </header>
+        {{>timeline}}
+        {{>accountMap}}
+        {{>transactions}}
+    </div>
 </body>
 
 <template name="timeline">
-  <svg id="timeline" class="timeline"></svg>
-</template>
-
-<template name="accountList">
-<ul id="accountList" class="accountList">
-  {{#each accounts}}
-    {{>accountListItem}}
-  {{/each}}
-</ul>
-</template>
-
-<template name="accountListItem">
-<li class="accountListItem" style="background-color: #{{color}}">
-  <input type="checkbox" name="{{_id}}" id="show-{{_id}}">
-  <label for="show-{{_id}}">{{name}}</label>
-</li>
+    <svg id="timeline" class="timeline"></svg>
 </template>
 
 <template name="accountMap">
-  <svg id="accountMap" class="accountMap"></svg>
+    <svg id="accountMap" class="accountMap"></svg>
 </template>
 
 <template name="transactions">
-  <div id="transactions" class="transactions"></div>
+    <div id="transactions" class="transactions"></div>
+</template>
+
+<template name="currencyChooser">
+    <div class="currencyChooser">
+
+        <select name="currency" id="currency">
+            {{#each currencies}}
+            <option value="{{code}}">{{name}}</option>
+            {{/each}}
+        </select>
+
+    </div>
 </template>
