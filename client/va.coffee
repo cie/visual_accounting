@@ -22,14 +22,16 @@ Template.accountMap.rendered = ->
     .attr("height", svg[0][0].clientHeight)
     .style("fill", "none")
     .style("pointer-events", "all")
-    .call(
-      d3.behavior.zoom()
-        .on("zoom", ()->
-          canvas.attr("transform", "translate(#{d3.event.translate})scale(#{d3.event.scale})")
-        )
-    )
+
+  svg.call(
+    d3.behavior.zoom()
+      .on("zoom", (d,i)->
+        canvas.attr("transform", "translate(#{d3.event.translate})scale(#{d3.event.scale})")
+      )
+  )
 
   canvas = svg.append("g")
+
 
 
   Deps.autorun ->
