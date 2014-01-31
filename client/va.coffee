@@ -40,31 +40,48 @@ Template.accountMap.rendered = ->
       currency = Currency.first(code: Session.get("currency"))
       return unless currency # not loaded yet
 
-      accounts = Account.all()
+      data = Account.all()
 
-      circles = canvas
-        .selectAll("circle")
-        .data(accounts, (a)->a._id)
+      accounts = canvas
+        .selectAll(".account")
+        .data(data, (a)->a._id)
 
-      r = d3.scale.sqrt().domain([0,100]).range([0,600])
+      r = d3.scale.sqrt().domain([0,100]).range([0,100])
 
-      circles.enter()
-        .append("circle")
-          .attr("cx", (a) -> a.x)
-          .attr("cy", (a) -> a.y)
-          .attr("r", (a) -> r(a.amount()))
-          .style("fill", (a)->"#"+a.color)
-          .style("opacity", (a)->0.7)
-          .call(
-            d3.behavior.drag()
-              .on("dragstart", (d,i)->
-                d3.event.sourceEvent.stopPropagation()
-              ).on("drag", (d,i)->
-                d.x = d3.event.x
-                d.y = d3.event.y
-                d3.select(this).attr("transform", "translate(" + [ d.x,d.y ] + ")")
-              )
-          )
+      account = accounts.enter()
+        .append("g")
+        .attr("class", "account")
+        .attr("transform", (a)-> "translate(#{a.x},#{a.y})")
+        .call(
+          d3.behavior.drag()
+            .on("dragstart", (d,i)->
+              d3.event.sourceEvent.stopPropagation()
+              d3.select(@).classed("dragging", yes)
+              $
+            ).on("drag", (d,i)->
+              d.x = d3.event.x
+              d.y = d3.event.y
+              d3.select(this).attr("transform", "translate(" + [ d.x,d.y ] + ")")
+            ).on("dragend", (d,i) ->
+              d3.select(@).classed("dragging", no)
+            )
+        )
+
+      account.append("circle")
+      account.append("text").attr("class", "name")
+      account.append("text").attr("class", "amount")
+
+      accounts.select("circle")
+        .attr("r", (a) -> r(a.amount()))
+        .style("fill", (a)->"#"+a.color)
+      accounts.select(".name")
+        .text((d)->d.name)
+      accounts.select(".amount")
+        .text((d)->d.amount())
+
+      accounts.exit().remove()
+        
+
 
     catch e
       console.error e.message
