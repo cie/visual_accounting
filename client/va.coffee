@@ -51,13 +51,14 @@ Template.accountMap.rendered = ->
       account = accounts.enter()
         .append("g")
         .attr("class", "account")
-        .attr("transform", (a)-> "translate(#{a.x},#{a.y})")
         .call(
           d3.behavior.drag()
             .on("dragstart", (d,i)->
               d3.event.sourceEvent.stopPropagation()
               d3.select(@).classed("dragging", yes)
-              $
+
+              # bring to forward
+              @.parentNode.appendChild(@)
             ).on("drag", (d,i)->
               d.x = d3.event.x
               d.y = d3.event.y
@@ -69,8 +70,15 @@ Template.accountMap.rendered = ->
         )
 
       account.append("circle")
-      account.append("text").attr("class", "name")
-      account.append("text").attr("class", "amount")
+      account.append("text")
+        .attr("class", "name")
+        .attr("y", "-40")
+        .attr("dy", ".35em")
+      account.append("text")
+        .attr("class", "amount")
+        .attr("dy", ".35em")
+
+      accounts.transition().attr("transform", (a)-> "translate(#{a.x},#{a.y})")
 
       accounts.select("circle")
         .attr("r", (a) -> r(a.amount()))
