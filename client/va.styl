@@ -8,16 +8,21 @@
   height 400px
 
 .account
-  text
+  .name
     text-anchor middle
     visibility hidden
     font-size 18px
+    transform translate(0,-30)
+  .amount
+    visibility hidden
   &:hover
     circle
       stroke rgba(210,210,210,1)
-      stroke-width 6px
-  text
-    visibility visible
+      stroke-width 1px
+    .name
+      visibility visible
+    .amount
+      visibility visible
     
   
 .optionsBar

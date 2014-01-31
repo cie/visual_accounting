@@ -63,6 +63,7 @@ Template.accountMap.rendered = ->
               d.y = d3.event.y
               d3.select(this).attr("transform", "translate(" + [ d.x,d.y ] + ")")
             ).on("dragend", (d,i) ->
+              d.save(x: d.x, y: d.y)
               d3.select(@).classed("dragging", no)
             )
         )

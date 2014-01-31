@@ -5,6 +5,8 @@ class @Account extends Minimongoid
       parent_id:     type:String, max:50, optional:yes
       color:         type:String, max:50
       initialAmount: type:Number, decimal:yes
+      x:             type:Number, decimal:yes
+      y:             type:Number, decimal:yes
   )
 
   @has_many: [
@@ -17,7 +19,9 @@ class @Account extends Minimongoid
   ]
   
   @before_create: (attr) ->
-    attr.initialAmount = 0
+    attr.initialAmount ||= 0
+    attr.x ||= 0
+    attr.y ||= 0
     attr
 
   amount: () ->
