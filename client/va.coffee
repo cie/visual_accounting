@@ -23,10 +23,23 @@ Template.accountMap.rendered = ->
     .style("fill", "none")
     .style("pointer-events", "all")
 
+  zoomTransition = null
+
   svg.call(
     d3.behavior.zoom()
       .on("zoom", (d,i)->
-        canvas.attr("transform", "translate(#{d3.event.translate})scale(#{d3.event.scale})")
+        target = canvas
+
+        if d3.event.sourceEvent.type in ['wheel']
+          target = canvas.transition()
+            .ease("cubic-out")
+            .duration(200)
+
+        if d3.event.sourceEvent.type in ['dblclick']
+          target = canvas.transition()
+            .duration(500)
+
+        target.attr("transform", "translate(#{d3.event.translate})scale(#{d3.event.scale})")
       )
   )
 
@@ -51,6 +64,8 @@ Template.accountMap.rendered = ->
       account = accounts.enter()
         .append("g")
         .attr("class", "account")
+        # do not animate on first time
+        .attr("transform", (a)-> "translate(#{a.x},#{a.y})")
         .call(
           d3.behavior.drag()
             .on("dragstart", (d,i)->
@@ -69,7 +84,15 @@ Template.accountMap.rendered = ->
             )
         )
 
+      account.append("path")
+        .attr("d","M-5,0L5,0M0,-5L0,5")
+        .attr("class", "crosshair")
       account.append("circle")
+      account.append("path")
+        .attr("d","M-10,-10L-10,10L10,10L10,-10")
+        .attr("class", "hitArea")
+        .attr("fill", "none")
+        .style("pointer-events", "all")
       account.append("text")
         .attr("class", "name")
         .attr("y", "-40")
@@ -78,7 +101,8 @@ Template.accountMap.rendered = ->
         .attr("class", "amount")
         .attr("dy", ".35em")
 
-      accounts.transition().attr("transform", (a)-> "translate(#{a.x},#{a.y})")
+      accounts.transition()
+        .attr("transform", (a)-> "translate(#{a.x},#{a.y})")
 
       accounts.select("circle")
         .attr("r", (a) -> r(a.amount()))
@@ -87,6 +111,8 @@ Template.accountMap.rendered = ->
         .text((d)->d.name)
       accounts.select(".amount")
         .text((d)->d.amount())
+      accounts.select(".crosshair")
+        .attr("stroke", (a)->"#"+a.color)
 
       accounts.exit().remove()
         

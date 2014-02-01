@@ -26,7 +26,6 @@ class @Account extends Minimongoid
 
   amount: () ->
     @initialAmount
-    30
 
 
 
