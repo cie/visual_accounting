@@ -125,3 +125,8 @@ if Meteor.isServer
     Currency.showable(@userId)
 else
   Meteor.subscribe "currencies"
+
+
+class User extends Minimongoid
+  @_collection: Meteor.users
+

@@ -35,7 +35,7 @@
 
         <select name="currency" id="currency">
             {{#each currencies}}
-            <option value="{{code}}">{{name}}</option>
+            <option value="{{code}}" {{#if selected}}selected{{/if}}>{{name}}</option>
             {{/each}}
         </select>
 

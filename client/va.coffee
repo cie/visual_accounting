@@ -3,17 +3,18 @@ Handlebars.registerHelper "accounts", ->
 Handlebars.registerHelper "currencies", ->
   Currency.all()
 Handlebars.registerHelper "currency", ->
-  Session.get("currency")
+  Meteor.user().profile?.selectedCurrency
 Handlebars.registerHelper "ifCurrency", (currency, options) ->
-  if Session.equals("currency", currency)
+  if Meteor.user().profile?.selectedCurrency is currency
     options.fn()
   else
     options.inverse()
 
 
 Template.accountMap.rendered = ->
-  unless Session.get("currency")
-    Session.set("currency", Currency.first().code)
+  unless Meteor.user().profile?.selectedCurrency?
+    Meteor.users.update(Meteor.userId(), $set: "profile.selectedCurrency": "HUF")
+    return
 
   svg = d3.select("#accountMap")
 
@@ -50,7 +51,7 @@ Template.accountMap.rendered = ->
   Deps.autorun ->
     try
 
-      currency = Currency.first(code: Session.get("currency"))
+      currency = Currency.first(code: Meteor.user().profile.selectedCurrency)
       return unless currency # not loaded yet
 
       data = Account.all()
@@ -121,11 +122,13 @@ Template.accountMap.rendered = ->
     catch e
       console.error e.message
 
-
+Template.currencyChooser.helpers
+  selected: ->
+    @code is Meteor.user().profile.selectedCurrency
 
 Template.currencyChooser.events
   "change #currency": (e) ->
-    Session.set("currency", e.target.value)
+    Meteor.users.update(Meteor.userId(), $set: "profile.selectedCurrency": e.target.value)
 
 
 
