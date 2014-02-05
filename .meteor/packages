@@ -4,8 +4,6 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-autopublish
-insecure
 preserve-inputs
 coffeescript
 d3
@@ -13,3 +11,8 @@ stylus
 bootstrap
 minimongoid
 collection2
+accounts-ui
+accounts-password
+email
+accounts-google
+accounts-facebook

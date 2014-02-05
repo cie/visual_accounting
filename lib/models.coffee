@@ -7,6 +7,7 @@ class @Account extends Minimongoid
       initialAmount: type:Number, decimal:yes
       x:             type:Number, decimal:yes
       y:             type:Number, decimal:yes
+      userId:        type:String, max:50
   )
 
   @has_many: [
@@ -22,12 +23,34 @@ class @Account extends Minimongoid
     attr.initialAmount ||= 0
     attr.x ||= 0
     attr.y ||= 0
-    attr
+    attr.userId = Meteor.userId()
 
   amount: () ->
     @initialAmount
 
+  showable: (userId) -> @userId is userId
+  @showable: (userId) -> @find userId: userId
 
+  editable: (userId) -> @userId is userId
+  @editable: (userId) -> @find userId: userId
+
+Account._collection.allow
+  insert: (userId, account) ->
+    throw new Meteor.Error 403, "No access to account" unless new Account(account).editable(userId)
+    yes
+  update: (userId, account, fields, modifier) ->
+    throw new Meteor.Error 403, "No access to account" unless new Account(account).editable(userId)
+    yes
+  remove: (userId, account) ->
+    throw new Meteor.Error 403, "No access to account" unless new Account(account).editable(userId)
+    yes
+  
+
+if Meteor.isServer
+  Meteor.publish "accounts", ->
+    Account.showable(@userId)
+else
+  Meteor.subscribe "accounts"
 
 if Meteor.isServer
   if Account.count() is 0
@@ -44,7 +67,37 @@ class @Transaction extends Minimongoid
     schema:
       src_id:  type:String, max:50
       dest_id: type:String, max:50
+      userId:  type:String, max:50
   )
+
+  @before_create: (attr) ->
+    attr.userId = Meteor.userId()
+    attr
+
+  showable: (userId) -> @userId is userId
+  @showable: (userId) -> @find userId: userId
+
+  editable: (userId) -> @userId is userId
+  @editable: (userId) -> @find userId: userId
+
+Transaction._collection.allow
+  insert: (userId, account) ->
+    throw new Meteor.Error 403, "No access to transaction" unless new Transaction(account).editable(userId)
+    yes
+  update: (userId, account, fields, modifier) ->
+    throw new Meteor.Error 403, "No access to transaction" unless new Transaction(account).editable(userId)
+    yes
+  remove: (userId, account) ->
+    throw new Meteor.Error 403, "No access to transaction" unless new Transaction(account).editable(userId)
+    yes
+
+if Meteor.isServer
+  Meteor.publish "transactions", ->
+    Transaction.showable(@userId)
+else
+  Meteor.subscribe "transactions"
+
+
 
 
 class @Currency extends Minimongoid
@@ -57,9 +110,18 @@ class @Currency extends Minimongoid
 
   figure: (n) -> n / @value
 
+  @showable: (userId) -> @find()
+  showable: (userId) -> true
 
 if Meteor.isServer
   if Currency.count() is 0
     Currency.create code: "EUR", name: "€",  value: 1.000
     Currency.create code: "HUF", name: "Ft", value: 0.00323
     Currency.create code: "USD", name: "$",  value: 0.7322
+
+
+if Meteor.isServer
+  Meteor.publish "currencies", ->
+    Currency.showable(@userId)
+else
+  Meteor.subscribe "currencies"
