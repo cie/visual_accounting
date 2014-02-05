@@ -18,9 +18,12 @@ Template.accountMap.rendered = ->
 
   svg = d3.select("#accountMap")
 
+  width = svg[0][0].clientWidth
+  height = svg[0][0].clientHeight
+
   zoomHitArea = svg.append("rect")
-    .attr("width", svg[0][0].clientWidth)
-    .attr("height", svg[0][0].clientHeight)
+    .attr("width", width)
+    .attr("height", height)
     .style("fill", "none")
     .style("pointer-events", "all")
 
@@ -132,8 +135,46 @@ Template.currencyChooser.events
 
 
 
+Template.timeline.rendered = ->
 
+  svg = d3.select("#timeline")
 
+  width = svg[0][0].clientWidth
+  height = svg[0][0].clientHeight
+
+  zoomHitArea = svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", "none")
+    .style("pointer-events", "all")
+
+  zoomTransition = null
+
+  x = d3.time.scale()
+    .domain([d3.time.month.offset(new Date(), -3), d3.time.month.offset(new Date(), 3)])
+    .rangeRound([0,width])
+
+  svg.call(
+    d3.behavior.zoom()
+      .x(x)
+      .scaleExtent([1.0/25 , 30])
+      .on("zoom", (d,i)->
+        svg.select(".xAxis").call(xAxis)
+      )
+  )
+
+  xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(7)
+      .tickSize(0)
+
+  svg.append("g")
+    .attr("class", "xAxis")
+    .attr("transform", "translate(0,#{height/2})")
+    .call(xAxis)
+
+  Session.set("timelineZoom", 12)
 
 
 
